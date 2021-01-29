@@ -8,15 +8,13 @@ import os
 import nltk
 import pycountry
 import re
-import string
-from PIL import Image
+
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from langdetect import detect
+
 from nltk.stem import SnowballStemmer
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from sklearn.feature_extraction.text import CountVectorizer
 
-# nltk.downloader.download('vader_lexicon')
+
 
 
 auth = tweepy.AppAuthHandler("U1JtNPSHYJvJikl5jjQCFyBX1", "e3cUrZLWg4ZklkBChWmzG3xdxODdaYjJxDGIUgV37dHOl5pNIq")
@@ -72,7 +70,7 @@ tw_list.to_csv("pruebasamu.csv")
 # print(tw_list)
 for index, row in tw_list["text"].iteritems():
     score = SentimentIntensityAnalyzer().polarity_scores(row)
-    print(score)
+    # print(score)
     neg = score["neg"]
     neu = score["neu"]
     pos = score["pos"]
@@ -101,11 +99,17 @@ tw_list_neutral = tw_list[tw_list["sentiment"] == "neutral"]
 def count_values_in_column(data, feature):
     total = data.loc[:, feature].value_counts(dropna=False)
     percentage = round(data.loc[:, feature].value_counts(dropna=False, normalize=True)*100, 2)
-    return pd.concat([total, percentage], axis=1, keys=["Total", "Percentage"])
+    return pd.concat([total, percentage], sort=True, axis=1, keys=["Total", "Percentage"])
     # Count_values for sentiment
 
 
 print(count_values_in_column(tw_list,"sentiment"))
+wey = count_values_in_column(tw_list, "sentiment")
+wey2 = pd.DataFrame(wey)
+print(wey2)
+positive = wey2["Percentage"][2]
+nue = wey2["Percentage"][1]
+nega = wey2["Percentage"][0]
 
 # create data for Pie Chart
 pichart = count_values_in_column(tw_list,"sentiment")
@@ -114,10 +118,11 @@ size = pichart["Percentage"]
 
 
 # Create a circle for the center of the plot
-my_circle = plt.Circle((0,0), 0.5, color="white")
-plt.pie(size, labels=names, colors=["blue", "red", "green"])
-p = plt.gcf()
-p.gca().add_artist(my_circle)
+my_circle = plt.Circle((0,0), 0.6, color="white")
+plt.pie(size, labels=names, colors=["red", "blue", "green"])
+plt.title("Sentiment Analysis Result for "+keyword+"")
+labels = ["Negative ["+str(wey2["Percentage"][0])+"%]", "Neutral ["+str(wey2["Percentage"][1])+"%]", "Positive ["+str(wey2["Percentage"][2])+"%]"]
+plt.legend(labels)
 plt.show()
 
 
