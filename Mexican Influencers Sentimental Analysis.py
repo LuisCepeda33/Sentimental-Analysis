@@ -17,7 +17,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
 
-auth = tweepy.AppAuthHandler("U1JtNPSHYJvJikl5jjQCFyBX1", "***UrZLWg4ZklkBChWmzG3xdxODdaYjJxDGIUgV37dHOl5pNIq")
+auth = tweepy.AppAuthHandler("**JtNPSHYJvJikl5jjQCFyBX1", "***UrZLWg4ZklkBChWmzG3xdxODdaYjJxDGIUgV37dHOl5pNIq")
 api = tweepy.API(auth)
 
 
