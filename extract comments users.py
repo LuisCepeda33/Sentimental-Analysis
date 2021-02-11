@@ -6,7 +6,7 @@ data = json.load(f)
 
 print(type(data))
 
-###NA
+#####NA
 info = []
 for x in range(len(data["GraphImages"])):
     info.append(data["GraphImages"][x]["comments"])
