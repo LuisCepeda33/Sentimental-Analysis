@@ -10,7 +10,7 @@ from extract_comments_users import *
 datainsta = pd.DataFrame(extract_comments_users(data))
 
 
-auth = tweepy.AppAuthHandler("U1JtNPSHYJvJikl5jjQCFyBX1", "e3cUrZLWg4ZklkBChWmzG3xdxODdaYjJxDGIUgV37dHOl5pNIq")
+auth = tweepy.AppAuthHandler("****************", "********************")
 api = tweepy.API(auth)
 
 
