@@ -1,23 +1,16 @@
 from textblob import TextBlob
-import sys
 import tweepy
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
-import os
-import nltk
-import pycountry
-import re
-
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-from nltk.stem import SnowballStemmer
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
+# Import functions from others files
+from extract_comments_users import *
+
+datainsta = pd.DataFrame(extract_comments_users(data))
 
 
-
-
-auth = tweepy.AppAuthHandler("**JtNPSHYJvJikl5jjQCFyBX1", "***UrZLWg4ZklkBChWmzG3xdxODdaYjJxDGIUgV37dHOl5pNIq")
+auth = tweepy.AppAuthHandler("U1JtNPSHYJvJikl5jjQCFyBX1", "e3cUrZLWg4ZklkBChWmzG3xdxODdaYjJxDGIUgV37dHOl5pNIq")
 api = tweepy.API(auth)
 
 
@@ -46,28 +39,27 @@ for tweet in tweets:
 
 tweet_list = pd.DataFrame(tweet_list)
 
-#print(tweet_list)
-
-
 # Cleaning Data
 # Drop duplicates
 tweet_list.drop_duplicates(inplace=True)
-#print(tweet_list)
+
 
 # Cleaning Text (RT, Punctuation etc)
-# Creating new dataframe and new features
+
+# Creating new dataframe and new features and join instagram data
 tw_list = pd.DataFrame(tweet_list)
+tw_list = pd.concat([tw_list, datainsta.rename(columns={'0':'text'})], ignore_index=True)
 tw_list["text"] = tw_list[0]
-#print(tw_list)
+
 
 # Removing RT, Punctuation etc
-tweet_list["text"] = tweet_list["text"].apply(cleantxt)
-#print(tweet_list)
+tw_list["text"] = tw_list["text"].apply(cleantxt)
+
 
 # Calculating Negative, Positive, Neutral and Compound values
 tw_list[["polarity", "subjectivity"]] = tw_list["text"].apply(lambda Text: pd.Series(TextBlob(Text).sentiment))
 tw_list.to_csv("pruebasamu.csv")
-# print(tw_list)
+
 for index, row in tw_list["text"].iteritems():
     score = SentimentIntensityAnalyzer().polarity_scores(row)
     # print(score)
@@ -86,9 +78,6 @@ for index, row in tw_list["text"].iteritems():
     tw_list.loc[index, "pos"] = pos
     tw_list.loc[index, "compound"] = comp
 
-tw_list.to_csv("pruebasamu2.csv")
-
-
 
 # Creating new data frames for all sentiments (positive, negative and neutral)
 tw_list_negative = tw_list[tw_list["sentiment"] == "negative"]
@@ -103,10 +92,8 @@ def count_values_in_column(data, feature):
     # Count_values for sentiment
 
 
-print(count_values_in_column(tw_list,"sentiment"))
 wey = count_values_in_column(tw_list, "sentiment")
 wey2 = pd.DataFrame(wey)
-print(wey2)
 positive = wey2["Percentage"][2]
 nue = wey2["Percentage"][1]
 nega = wey2["Percentage"][0]
@@ -121,6 +108,7 @@ size = pichart["Percentage"]
 my_circle = plt.Circle((0,0), 0.6, color="white")
 plt.pie(size, labels=names, colors=["red", "blue", "green"])
 plt.title("Sentiment Analysis Result for "+keyword+"")
+plt.text(-2, 0.9, ""+str(len(tw_list))+" comments analyzed", size=12, color='black')
 labels = ["Negative ["+str(wey2["Percentage"][0])+"%]", "Neutral ["+str(wey2["Percentage"][1])+"%]", "Positive ["+str(wey2["Percentage"][2])+"%]"]
 plt.legend(labels)
 plt.show()
